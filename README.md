@@ -3,6 +3,8 @@
 Sample Python web app for the CI demonstration
 
 This Feature includes is a Python Flask app with sqlite DB embedded.
+    includes pytest
+    include jenkins for build, inspect and package
 
 ## Launch app in vscode
 
