@@ -46,15 +46,16 @@ pipeline {
             }
         }
         stage('Inspect_SonarQubeAnalytics') {
-            steps {
-                withSonarQubeEnv('sonarQube') { // this must match sonar server name from global configuraiton
-                // if [[ "$CI_BRANCH_NAME" == 'Feature/*' ]] || [[ "$CI_BRANCH_NAME" == 'master' ]] || [[ "$CI_BRANCH_NAME" == 'release/*' ]]; then
-                sh "${tool("sonarQube")}/bin/sonar-scanner -Dsonar.projectKey=CI_Sample_Python \
+        steps {
+            script {
+                def scannerHome = tool 'sonarqube';
+                withSonarQubeEnv("sonarQube") {
+                    sh "${tool("sonarQube")}/bin/sonar-scanner -Dsonar.projectKey=CI_Sample_Python \
                     -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 \
                     -Dsonar.login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43"
-                // fi
-                }
-            }
+                    }
+                    }
+                    }
         }
     //     stage("PackagePublishToNexus") {
     //         steps {
