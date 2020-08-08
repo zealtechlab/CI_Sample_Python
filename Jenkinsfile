@@ -51,14 +51,17 @@ pipeline {
                 }
             }
         }
-    //     stage('Inspect_SonarQubeAnalytics') {
-    //         steps {
-    //             withSonarQubeEnv('SonarQube') { // this must match sonar server name from global configuraiton
-    //             // if [[ "$CI_BRANCH_NAME" == 'Feature/*' ]] || [[ "$CI_BRANCH_NAME" == 'master' ]] || [[ "$CI_BRANCH_NAME" == 'release/*' ]]; then
-    //             // fi
-    //             }
-    //         }
-    //     }
+        stage('Inspect_SonarQubeAnalytics') {
+            steps {
+                withSonarQubeEnv('SonarQube') { // this must match sonar server name from global configuraiton
+                // if [[ "$CI_BRANCH_NAME" == 'Feature/*' ]] || [[ "$CI_BRANCH_NAME" == 'master' ]] || [[ "$CI_BRANCH_NAME" == 'release/*' ]]; then
+                sh "${tool("SonarQube_Scanner")}/bin/sonar-scanner -Dsonar.projectKey=CI_Sample_Python \
+                    -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 \
+                    -Dsonar.login=ad62157c6bb0f42150da5975f25e3260660a9826"
+                // fi
+                }
+            }
+        }
     //     stage("PackagePublishToNexus") {
     //         steps {
     //             script {
