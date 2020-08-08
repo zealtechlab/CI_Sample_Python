@@ -51,48 +51,48 @@ pipeline {
                 }
             }
         }
-        stage('Inspect_SonarQubeAnalytics') {
-            steps {
-                withSonarQubeEnv('SonarQube') { // this must match sonar server name from global configuraiton
-                // if [[ "$CI_BRANCH_NAME" == 'Feature/*' ]] || [[ "$CI_BRANCH_NAME" == 'master' ]] || [[ "$CI_BRANCH_NAME" == 'release/*' ]]; then
-                // fi
-                }
-            }
-        }
-        stage("PackagePublishToNexus") {
-            steps {
-                script {
-                    // Read setup.cfg file using 'readProperties' step , this step 'readProperties' is included in: https://plugins.jenkins.io/pipeline-utility-steps
-                    props = readProperties file: "setup.cfg";
-                    // Find built artifact under target folder
-                    filesByGlob = findFiles(glob: "target/*.${props.metadata}");
-                    // Print some info from the artifact found
-                    echo "${filesByGlob[0].name} ${filesByGlob[0].version} ${filesByGlob[0].url} ${filesByGlob[0].license} ${filesByGlob[0].maintanier}"
-                    // Extract the path from the File found
-                    artifactPath = filesByGlob[0].path;
-                    // Assign to a boolean response verifying If the artifact name exists
-                    artifactExists = fileExists artifactPath;
-                    if(artifactExists) {
-                        echo "*** File: ${artifactPath}, packaging: ${props.name}, version ${props.version}";
+    //     stage('Inspect_SonarQubeAnalytics') {
+    //         steps {
+    //             withSonarQubeEnv('SonarQube') { // this must match sonar server name from global configuraiton
+    //             // if [[ "$CI_BRANCH_NAME" == 'Feature/*' ]] || [[ "$CI_BRANCH_NAME" == 'master' ]] || [[ "$CI_BRANCH_NAME" == 'release/*' ]]; then
+    //             // fi
+    //             }
+    //         }
+    //     }
+    //     stage("PackagePublishToNexus") {
+    //         steps {
+    //             script {
+    //                 // Read setup.cfg file using 'readProperties' step , this step 'readProperties' is included in: https://plugins.jenkins.io/pipeline-utility-steps
+    //                 props = readProperties file: "setup.cfg";
+    //                 // Find built artifact under target folder
+    //                 filesByGlob = findFiles(glob: "target/*.${props.metadata}");
+    //                 // Print some info from the artifact found
+    //                 echo "${filesByGlob[0].name} ${filesByGlob[0].version} ${filesByGlob[0].url} ${filesByGlob[0].license} ${filesByGlob[0].maintanier}"
+    //                 // Extract the path from the File found
+    //                 artifactPath = filesByGlob[0].path;
+    //                 // Assign to a boolean response verifying If the artifact name exists
+    //                 artifactExists = fileExists artifactPath;
+    //                 if(artifactExists) {
+    //                     echo "*** File: ${artifactPath}, packaging: ${props.name}, version ${props.version}";
 
-                        nexusPublisher nexusInstanceId: NEXUS_INSTANCE, 
-                            nexusRepositoryId: NEXUS_REPOSITORY, 
-                            packages: [
-                                [$class: 'PyPiPackage', 
-                                mavenAssetList: [
-                                    [classifier: '', extension: '', 
-                                    filePath: artifactPath]
-                                    ], 
-                                mavenCoordinate: [packaging: props.name, version: props.version]
-                                    ]
-                                ]
-                    } else {
-                        error "*** File: ${artifactPath}, could not be found";
-                    }
-                }
-            }
-        }
-    }
+    //                     nexusPublisher nexusInstanceId: NEXUS_INSTANCE, 
+    //                         nexusRepositoryId: NEXUS_REPOSITORY, 
+    //                         packages: [
+    //                             [$class: 'PyPiPackage', 
+    //                             mavenAssetList: [
+    //                                 [classifier: '', extension: '', 
+    //                                 filePath: artifactPath]
+    //                                 ], 
+    //                             mavenCoordinate: [packaging: props.name, version: props.version]
+    //                                 ]
+    //                             ]
+    //                 } else {
+    //                     error "*** File: ${artifactPath}, could not be found";
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
     
     post {
         always {
