@@ -33,7 +33,7 @@ pipeline {
                     sh 'pip install -r requirements.txt'
                     sh 'export FLASK_APP=flaskr'
                     sh 'export FLASK_ENV=development'
-                    sh 'python3 -m flask init-db'
+                    sh 'FLASK_APP=flaskr flask init-db'
                 }
             }
         }
