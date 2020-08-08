@@ -1,6 +1,6 @@
 pipeline { 
     // this is an important setup or differentiator from native java jenkins pipe
-    agent { docker { image 'python:3.8.5' } }
+    agent any
     
     // This displays colors using the 'xterm' ansi color map in the console output
     options {
