@@ -31,6 +31,9 @@ pipeline {
             steps {
                 script {
                     sh 'pip install -r requirements.txt'
+                    sh 'export FLASK_APP=flaskr'
+                    sh 'export FLASK_ENV=development'
+                    sh 'flask init-db'
                 }
             }
         }
