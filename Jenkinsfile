@@ -1,6 +1,6 @@
 pipeline { 
     // this is an important setup or differentiator from native java jenkins pipe
-    agent any
+    agent { docker { image 'python:3.6.6' } }
     
     // This displays colors using the 'xterm' ansi color map in the console output
     options {
@@ -21,6 +21,7 @@ pipeline {
         stage("CloneCode") {
             steps {
                 script {
+                    sh 'python --version'
                     // Let's clone the source
                     echo 'Repo Checkout'
                     // git %GIT_URL%;
@@ -46,11 +47,11 @@ pipeline {
         }
         stage('Inspect_SonarQubeAnalytics') {
             steps {
-                withSonarQubeEnv('SonarQube') { // this must match sonar server name from global configuraiton
+                withSonarQubeEnv('sonarQube') { // this must match sonar server name from global configuraiton
                 // if [[ "$CI_BRANCH_NAME" == 'Feature/*' ]] || [[ "$CI_BRANCH_NAME" == 'master' ]] || [[ "$CI_BRANCH_NAME" == 'release/*' ]]; then
                 sh "${tool("SonarQube_Scanner")}/bin/sonar-scanner -Dsonar.projectKey=CI_Sample_Python \
                     -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 \
-                    -Dsonar.login=ad62157c6bb0f42150da5975f25e3260660a9826"
+                    -Dsonar.login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43"
                 // fi
                 }
             }
