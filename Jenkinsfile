@@ -37,7 +37,7 @@ pipeline {
         stage("pytest") {
             steps {
                 script {
-                    sh "pytest"
+                    sh "python3 -m pytest"
                 }
             }
         }
