@@ -17,13 +17,6 @@ pipeline {
     }
 
     stages {
-        stage('Stage1') {
-            steps {
-            echo "All Jenkins Environment Variables *** Begins"
-            sh 'printenv'
-            echo "All Jenkins Environment Variables *** Ends"
-            }
-        }
         // CloneCode stage is commented as the repo is already cloned by the Jenkins pipe
         stage("CloneCode") {
             steps {
@@ -62,9 +55,6 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') { // this must match sonar server name from global configuraiton
                 // if [[ "$CI_BRANCH_NAME" == 'Feature/*' ]] || [[ "$CI_BRANCH_NAME" == 'master' ]] || [[ "$CI_BRANCH_NAME" == 'release/*' ]]; then
-                    // sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar'
-                    sh 'mvn sonar:sonar -Dtest=SuiteTest'
-                    // sh 'mvn sonar:sonar -Dtest=SuiteTest -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=ad62157c6bb0f42150da5975f25e3260660a9826'
                 // fi
                 }
             }
