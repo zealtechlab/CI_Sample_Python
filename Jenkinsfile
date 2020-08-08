@@ -48,7 +48,7 @@ pipeline {
         stage('Inspect_SonarQubeAnalytics') {
         steps {
             script {
-                def scannerHome = tool 'sonarqube';
+                def scannerHome = tool 'sonarQube';
                 withSonarQubeEnv("sonarQube") {
                     sh "${tool("sonarQube")}/bin/sonar-scanner -Dsonar.projectKey=CI_Sample_Python \
                     -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 \
