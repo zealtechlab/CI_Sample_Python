@@ -55,9 +55,9 @@ pipeline {
                     // sh "${tool("sonarQube")}/bin/sonar-scanner -Dsonar.projectKey=CI_Sample_Python \
                     // -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 \
                     // -Dsonar.login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43"
-                    sh docker run --rm -e SONAR_HOST_URL='${SONARQUBE_URL}' \
+                    sh "docker run --rm -e SONAR_HOST_URL='${SONARQUBE_URL}' \
                     -e SONAR_Login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43 \
-                    -v "${YOUR_REPO}:/usr/src" sonarsource/sonar-scanner-cli
+                    -v '${YOUR_REPO}:/usr/src' sonarsource/sonar-scanner-cli"
 
                     }
                     }
@@ -100,25 +100,25 @@ pipeline {
     
     post {
         always {
-            echo 'JENKINS PIPELINE'
+            echo 'JENKINS PIPELINE - ${env.BUILD_URL}'
         }
         notBuilt {
-            echo 'JENKINS PIPELINE NOT BUILT'
+            echo '${env.BUILD_URL} JENKINS PIPELINE NOT BUILT'
         }
         success {
-            echo 'JENKINS PIPELINE SUCCESSFUL'
+            echo '${env.BUILD_URL} JENKINS PIPELINE SUCCESSFUL'
         }
         failure {
-            echo 'JENKINS PIPELINE FAILED'
+            echo '${env.BUILD_URL} JENKINS PIPELINE FAILED'
         }
         unstable {
-            echo 'JENKINS PIPELINE WAS MARKED AS UNSTABLE'
+            echo '${env.BUILD_URL} JENKINS PIPELINE WAS MARKED AS UNSTABLE'
         }
         changed {
-            echo 'JENKINS PIPELINE STATUS HAS CHANGED SINCE LAST EXECUTION'
+            echo '${env.BUILD_URL} JENKINS PIPELINE STATUS HAS CHANGED SINCE LAST EXECUTION'
         }
         aborted {
-            echo 'JENKINS PIPELINE ABORTED'
+            echo '${env.BUILD_URL} JENKINS PIPELINE ABORTED'
         }
     }
 }
