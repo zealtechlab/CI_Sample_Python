@@ -28,6 +28,7 @@ pipeline {
                     // Let's clone the source
                     echo 'Repo Checkout'
                     // git %GIT_URL%;
+                    stash(name: 'scm', includes: '*') 
                 }
             }
         }
@@ -64,20 +65,12 @@ pipeline {
             }
         }
         stage('Test') {
-            agent {
-                docker {
-                    image 'qnib/pytest'
-                }
-            }
+            agent {docker {image 'qnib/pytest'} args '-v ${PWD}:/usr/src/app -w /usr/src/app'}
             steps {
                 sh 'pip install -e .'
-                sh 'py.test --verbose --junit-xml test-reports/results.xml flaskr/__init__.py'
+                sh 'py.test --verbose --junit-xml test-reports/results.xml tests/*.py'
             }
-            post {
-                always {
-                    junit 'test-reports/results.xml'
-                }
-            }
+            post {always {junit 'test-reports/results.xml'}}
         }
         stage('Inspect_SonarQubeAnalytics') {
             steps {
