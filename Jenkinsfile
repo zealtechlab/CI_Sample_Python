@@ -24,7 +24,7 @@ pipeline {
         stage("CloneCode") {
             steps {
                 script {
-                    sh 'python --version'
+                    sh 'printenv'
                     // Let's clone the source
                     echo 'Repo Checkout'
                     // git %GIT_URL%;
