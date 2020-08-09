@@ -74,13 +74,15 @@ pipeline {
         stage('Deliver') {
             agent any
             environment {
-                VOLUME = '"$(pwd)/flaskr:/src", "$(pwd)/tests:/tests"'
+                VOLUME = '${PWD}/flaskr:/src, ${PWD}/tests:/tests'
                 IMAGE = 'prabha6kar/ci_sample_python:flaskr_blog'
             }
             steps {
                 dir(path: BUILD_ID) {
                     unstash(name: 'compiled-results')
+                    sh "cat ${PWD}/mypass.txt | docker login --username prabha6kar --password-stdin"
                     sh "docker run --rm -v '${VOLUME}' '${IMAGE}' 'FLASK_APP=flaskr flaskr run'"
+                    sh "docker logout"
                 }
             }
             post {
