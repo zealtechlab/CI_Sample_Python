@@ -78,6 +78,7 @@ pipeline {
                         args '-v ${PWD}:/usr/src/app -w /usr/src/app'
                         reuseNode true  } }
             steps {
+                sh 'pip install -e .'
                 sh 'python setup.py sdist bdist_wheel'
                 sh 'twine --repository-url $NEXUS_URL/$NEXUS_REPOSITORY \
                 --username $REPOSITORY_USER --password $REPOSITORY_PASSWORD dist/*'
