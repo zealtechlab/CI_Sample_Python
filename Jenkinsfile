@@ -74,7 +74,7 @@ pipeline {
         stage('Deliver') {
             agent any
             environment {
-                VOLUME = '$(pwd)/flaskr:/src, $(pwd)/tests:/tests'
+                VOLUME = '"$(pwd)/flaskr:/src", "$(pwd)/tests:/tests"'
                 IMAGE = 'prabha6kar/ci_sample_python:flaskr_blog'
             }
             steps {
