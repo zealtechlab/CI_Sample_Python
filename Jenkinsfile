@@ -32,7 +32,7 @@ pipeline {
                 }
             }
         }
-        stage('Build') {
+        stage('Compile_Build') {
             agent {
                 docker {image 'python:3.8-alpine' 
                         args '-v ${PWD}:/usr/src/app -w /usr/src/app'
@@ -44,13 +44,10 @@ pipeline {
             }
         }
         stage('setup_flaskr_Pytest') {
-            agent {docker {image 'qnib/pytest' 
-                            args '-v ${PWD}:/usr/src/app -w /usr/src/app'
-                            reuseNode true}}
             steps {
                 sh 'pip install -e .'
                 sh 'FLASK_APP=flaskr flask init-db'
-                sh 'py.test --verbose --junit-xml test-reports/results.xml tests/*.py'
+                sh 'pytest -v --junitxml="test-reports/results.xml"'
             }
             post {always {junit 'test-reports/results.xml'}}
         }
