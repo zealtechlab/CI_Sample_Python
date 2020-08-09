@@ -45,19 +45,14 @@ pipeline {
         }
 
         stage("setup_flaskr") {
-            // agent {
-            //     docker {
-            //         image 'python:3.8-alpine'
-            //     }
-            // }
             steps {
                 script {
-                    // sh 'pip install -r requirements.txt'
-                    // sh 'export FLASK_APP=flaskr'
-                    // sh 'export FLASK_ENV=development'
-                    // sh 'flask init-db'
-                    // sh 'python setup.py develop'
                     sh 'pip install -e .'
+                    // sh 'pip install -r requirements.txt'
+                    sh 'export FLASK_APP=flaskr'
+                    sh 'export FLASK_ENV=development'
+                    sh 'flask init-db'
+                    sh 'python setup.py develop'
                 }
             }
         }
