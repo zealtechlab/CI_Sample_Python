@@ -43,21 +43,13 @@ pipeline {
                 sh 'python setup.py develop'
             }
         }
-
-        stage("setup_flaskr") {
-            steps {
-                script {
-                    sh 'pip install -e .'
-                    sh 'FLASK_APP=flaskr flask init-db'
-                }
-            }
-        }
-        stage('Test') {
+        stage('setup_flaskr_Pytest') {
             agent {docker {image 'qnib/pytest' 
                             args '-v ${PWD}:/usr/src/app -w /usr/src/app'
                             reuseNode true}}
             steps {
                 sh 'pip install -e .'
+                sh 'FLASK_APP=flaskr flask init-db'
                 sh 'py.test --verbose --junit-xml test-reports/results.xml tests/*.py'
             }
             post {always {junit 'test-reports/results.xml'}}
