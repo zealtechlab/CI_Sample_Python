@@ -1,6 +1,7 @@
 pipeline { 
     // this is an important setup or differentiator from native java jenkins pipe
-    agent none
+    // requires a node context while ‘agent none’ was specified
+    agent any
     
     // This displays colors using the 'xterm' ansi color map in the console output
     options {
