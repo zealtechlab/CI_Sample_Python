@@ -35,6 +35,8 @@ pipeline {
             agent {
                 docker {
                     image 'python:3.8-alpine'
+                    args '-v ${PWD}:/usr/src/app -w /usr/src/app'
+                    reuseNode true
                 }
             }
             steps {
@@ -45,11 +47,11 @@ pipeline {
         }
 
         stage("setup_flaskr") {
-            agent {
-                docker {
-                    image 'python:3.8-alpine'
-                }
-            }
+            // agent {
+            //     docker {
+            //         image 'python:3.8-alpine'
+            //     }
+            // }
             steps {
                 script {
                     // sh 'pip install -r requirements.txt'
