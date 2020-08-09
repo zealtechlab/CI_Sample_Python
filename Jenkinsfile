@@ -15,7 +15,8 @@ pipeline {
         // // Repository where we will upload the artifact
         NEXUS_REPOSITORY_RELEASES = "python-releases"
         NEXUS_REPOSITORY_SNAPSHOTS = "python-snapshots"
-        SONARQUBE_URL = 'http://sonarqube:9000'
+        // SONARQUBE_URL = 'http://sonarqube:9000'
+        SONARQUBE_URL = 'http://172.18.0.3:9000'
         SONAR_CACHE_DIR = "${PWD}/sonar_cache"
     }
 
