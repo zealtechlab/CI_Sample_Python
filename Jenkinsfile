@@ -81,7 +81,7 @@ pipeline {
             steps {
                 sh 'pip install -e .'
                 sh 'python setup.py sdist bdist_wheel'
-                sh 'twine upload --repository-url $NEXUS_URL/$NEXUS_REPOSITORY \
+                sh 'twine upload --repository-url $NEXUS_URL/$NEXUS_REPOSITORY/ \
                 -u $REPOSITORY_USER -p $REPOSITORY_PASSWORD dist/*'
             }
         }
