@@ -80,13 +80,13 @@ pipeline {
             steps {
                 dir(path: BUILD_ID) {
                     unstash(name: 'compiled-results')
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'flaskr run'"
+                    sh "docker run --rm -v "${VOLUME}" "${IMAGE}" 'FLASK_APP=flaskr flaskr run'"
                 }
             }
             post {
                 success {
                     archiveArtifacts "${BUILD_ID}/sources/dist/flaskr_blog"
-                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
+                    sh "docker run --rm -v "${VOLUME}" "${IMAGE}" 'rm -rf build dist'"
                 }
             }
         }
