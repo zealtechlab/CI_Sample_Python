@@ -72,26 +72,15 @@ pipeline {
             }
         }
         
-        stage("PackagePublishToNexus") {
+        stage("DistPublishToNexus") {
+            agent {
+                docker {image 'python:3.8-alpine' 
+                        args '-v ${PWD}:/usr/src/app -w /usr/src/app'
+                        reuseNode true  } }
             steps {
-                sh 'python setup.py sdist nexus_upload \
-                --repository $NEXUS_URL/$NEXUS_REPOSITORY \
-                --username $REPOSITORY_USER --password $REPOSITORY_PASSWORD'
-                // script {
-                //     echo "*** File: ${BRANCH_NAME}";
-
-                //     nexusPublisher nexusInstanceId: NEXUS_INSTANCE, 
-                //         nexusRepositoryId: NEXUS_REPOSITORY, 
-                //         packages: [
-                //             [$class: 'PyPiPackage', 
-                //             mavenAssetList: [
-                //                 [classifier: '', extension: '', 
-                //                 filePath: JOB_NAME]
-                //                 ], 
-                //             mavenCoordinate: [packaging: BRANCH_NAME, version: BUILD_ID]
-                //                 ]
-                //             ]
-                // }
+                sh 'python setup.py sdist bdist_wheel'
+                sh 'twine --repository-url $NEXUS_URL/$NEXUS_REPOSITORY \
+                --username $REPOSITORY_USER --password $REPOSITORY_PASSWORD dist/*'
             }
         }
     }

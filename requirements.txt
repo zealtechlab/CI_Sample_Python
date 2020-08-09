@@ -1,4 +1,4 @@
 Flask
 pytest
 configure
-nexus_uploader
+twine
