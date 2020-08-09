@@ -16,7 +16,7 @@ pipeline {
         // // Repository where we will upload the artifact
         NEXUS_REPOSITORY_RELEASES = "python-releases"
         NEXUS_REPOSITORY_SNAPSHOTS = "python-snapshots"
-        SONAR_CACHE_DIR = "${BUILD_URL}/sonar_cache"
+        SONAR_CACHE_DIR = "${PWD}/sonar_cache"
     }
 
     stages {
@@ -56,7 +56,7 @@ pipeline {
                 script {
                     def scannerHome = tool 'sonarQube_Scanner';
                     withSonarQubeEnv("sonarQube") {
-                        // sh "${tool("sonarQube_Scanner")}/bin/sonar-scanner\
+                        // sh "${tool("sonarQube_Scanner")}/bin/sonar-scanner"
                         // -Dsonar.host.url=http://sonarqube:9000 \
                         // -Dsonar.login=454d59b6e686ff8a6cf6f984ed2553e615c33cfd"
                         sh "docker run --rm -e SONAR_HOST_URL=${SONARQUBE_URL} \
