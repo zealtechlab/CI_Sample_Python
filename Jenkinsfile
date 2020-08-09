@@ -83,9 +83,9 @@ pipeline {
                             [$class: 'PyPiPackage', 
                             mavenAssetList: [
                                 [classifier: '', extension: '', 
-                                filePath: ${JOB_NAME}]
+                                filePath: JOB_NAME]
                                 ], 
-                            mavenCoordinate: [packaging: ${BRANCH_NAME}, version: ${BUILD_ID}]
+                            mavenCoordinate: [packaging: BRANCH_NAME, version: BUILD_ID]
                                 ]
                             ]
                 }
