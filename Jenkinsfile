@@ -11,10 +11,10 @@ pipeline {
 
     environment {
         NEXUS_INSTANCE = 'sonatypeNexus'
+        NEXUS_URL = 'http://nexus:8081/repository'
+        REPOSITORY_USER = 'admin'
+        REPOSITORY_PASSWORD = 'password'
         NEXUS_REPOSITORY = "CI_Sample_Python"
-        // // Repository where we will upload the artifact
-        NEXUS_REPOSITORY_RELEASES = "python-releases"
-        NEXUS_REPOSITORY_SNAPSHOTS = "python-snapshots"
         // SONARQUBE_URL = 'http://sonarqube:9000'
         SONARQUBE_URL = 'http://172.18.0.3:9000'
         SONAR_CACHE_DIR = "${PWD}/sonar_cache"
@@ -74,28 +74,31 @@ pipeline {
         
         stage("PackagePublishToNexus") {
             steps {
-                script {
-                    echo "*** File: ${BRANCH_NAME}";
+                sh 'python setup.py sdist nexus_upload \
+                --repository $NEXUS_URL/$NEXUS_REPOSITORY \
+                --username $REPOSITORY_USER --password $REPOSITORY_PASSWORD'
+                // script {
+                //     echo "*** File: ${BRANCH_NAME}";
 
-                    nexusPublisher nexusInstanceId: NEXUS_INSTANCE, 
-                        nexusRepositoryId: NEXUS_REPOSITORY, 
-                        packages: [
-                            [$class: 'PyPiPackage', 
-                            mavenAssetList: [
-                                [classifier: '', extension: '', 
-                                filePath: JOB_NAME]
-                                ], 
-                            mavenCoordinate: [packaging: BRANCH_NAME, version: BUILD_ID]
-                                ]
-                            ]
-                }
+                //     nexusPublisher nexusInstanceId: NEXUS_INSTANCE, 
+                //         nexusRepositoryId: NEXUS_REPOSITORY, 
+                //         packages: [
+                //             [$class: 'PyPiPackage', 
+                //             mavenAssetList: [
+                //                 [classifier: '', extension: '', 
+                //                 filePath: JOB_NAME]
+                //                 ], 
+                //             mavenCoordinate: [packaging: BRANCH_NAME, version: BUILD_ID]
+                //                 ]
+                //             ]
+                // }
             }
         }
     }
     
     post {
         always {
-            echo 'JENKINS PIPELINE - ${env.BUILD_URL}, ${env.BUILD_NUMBER}'
+            echo 'JENKINS PIPELINE - $env.BUILD_URL, ${env.BUILD_NUMBER}'
         }
         notBuilt {
             echo '${env.BUILD_NUMBER} ${env.BUILD_URL} JENKINS PIPELINE NOT BUILT, STOPPED at STAGE - ${env.STAGE_NAME}'
