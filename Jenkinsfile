@@ -88,7 +88,7 @@ pipeline {
         //     }
         //     post {
         //         success {
-        //             archiveArtifacts "${BUILD_ID}/sources/dist/flaskr_blog"
+        //             archiveArtifacts "${env.BUILD_NUMBER}/sources/dist/flaskr_blog"
         //             sh "docker run --rm -v '${VOLUME}' '${IMAGE}' 'rm -rf build dist'"
         //         }
         //     }
@@ -96,33 +96,19 @@ pipeline {
         stage("PackagePublishToNexus") {
             steps {
                 script {
-                    // Read setup.cfg file using 'readProperties' step , this step 'readProperties' is included in: https://plugins.jenkins.io/pipeline-utility-steps
-                    props = readProperties file: "setup.cfg";
-                    // Find built artifact under target folder
-                    filesByGlob = findFiles(glob: "target/*.${props.metadata}");
-                    // Print some info from the artifact found
-                    echo "${filesByGlob[0].name} ${filesByGlob[0].version} ${filesByGlob[0].url} ${filesByGlob[0].license} ${filesByGlob[0].maintanier}"
-                    // Extract the path from the File found
-                    artifactPath = filesByGlob[0].path;
-                    // Assign to a boolean response verifying If the artifact name exists
-                    artifactExists = fileExists artifactPath;
-                    if(artifactExists) {
-                        echo "*** File: ${artifactPath}, packaging: ${props.name}, version ${props.version}";
+                    echo "*** File: ${BRANCH_NAME}";
 
-                        nexusPublisher nexusInstanceId: NEXUS_INSTANCE, 
-                            nexusRepositoryId: NEXUS_REPOSITORY, 
-                            packages: [
-                                [$class: 'PyPiPackage', 
-                                mavenAssetList: [
-                                    [classifier: '', extension: '', 
-                                    filePath: artifactPath]
-                                    ], 
-                                mavenCoordinate: [packaging: props.name, version: props.version]
-                                    ]
+                    nexusPublisher nexusInstanceId: NEXUS_INSTANCE, 
+                        nexusRepositoryId: NEXUS_REPOSITORY, 
+                        packages: [
+                            [$class: 'PyPiPackage', 
+                            mavenAssetList: [
+                                [classifier: '', extension: '', 
+                                filePath: artifactPath]
+                                ], 
+                            mavenCoordinate: [packaging: $BRANCH_NAME, version: $BUILD_ID]
                                 ]
-                    } else {
-                        error "*** File: ${artifactPath}, could not be found";
-                    }
+                            ]
                 }
             }
         }
@@ -130,25 +116,25 @@ pipeline {
     
     post {
         always {
-            echo 'JENKINS PIPELINE - $BUILD_URL, $BUILD_ID'
+            echo 'JENKINS PIPELINE - ${env.BUILD_URL}, ${env.BUILD_NUMBER}'
         }
         notBuilt {
-            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE NOT BUILT, STOPPED at STAGE - ${STAGE_NAME}'
+            echo '${env.BUILD_NUMBER} ${env.BUILD_URL} JENKINS PIPELINE NOT BUILT, STOPPED at STAGE - ${env.STAGE_NAME}'
         }
         success {
-            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE SUCCESSFUL'
+            echo '${env.BUILD_NUMBER} ${env.BUILD_URL} JENKINS PIPELINE SUCCESSFUL'
         }
         failure {
-            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE FAILED at Stage - ${STAGE_NAME}'
+            echo '${env.BUILD_NUMBER} ${env.BUILD_URL} JENKINS PIPELINE FAILED at Stage - ${env.STAGE_NAME}'
         }
         unstable {
-            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE WAS MARKED AS UNSTABLE'
+            echo '${env.BUILD_NUMBER} ${env.BUILD_URL} JENKINS PIPELINE WAS MARKED AS UNSTABLE'
         }
         changed {
-            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE STATUS HAS CHANGED SINCE LAST EXECUTION'
+            echo '${env.BUILD_NUMBER} ${env.BUILD_URL} JENKINS PIPELINE STATUS HAS CHANGED SINCE LAST EXECUTION'
         }
         aborted {
-            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE ABORTED'
+            echo '${env.BUILD_NUMBER} ${env.BUILD_URL} JENKINS PIPELINE ABORTED'
         }
     }
 }
