@@ -75,7 +75,7 @@ pipeline {
             agent any
             environment {
                 VOLUME = '$(pwd)/flaskr:/src, $(pwd)/tests:/tests'
-                IMAGE = 'prabha6kar/CI_Sample_Python:flaskr_blog'
+                IMAGE = 'prabha6kar/ci_sample_python:flaskr_blog'
             }
             steps {
                 dir(path: BUILD_ID) {
@@ -85,7 +85,7 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts "${BUILD_ID}/sources/dist/add2vals"
+                    archiveArtifacts "${BUILD_ID}/sources/dist/flaskr_blog"
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
                 }
             }
