@@ -35,7 +35,7 @@ pipeline {
         }
         stage('Compile_Build') {
             agent {
-                docker {image 'python:3.8-alpine' 
+                docker {image 'python:3.8' 
                         args '-v ${PWD}:/usr/src/app -w /usr/src/app'
                         reuseNode true  } }
             steps {
