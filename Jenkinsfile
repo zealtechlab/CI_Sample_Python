@@ -71,66 +71,66 @@ pipeline {
                 }
             }
         }
-        stage('Deliver') {
-            agent any
-            environment {
-                VOLUME = '$(pwd)/flaskr:/src, $(pwd)/tests:/tests'
-                IMAGE = 'prabha6kar/ci_sample_python:flaskr_blog'
-            }
+        // stage('Deliver') {
+        //     agent any
+        //     environment {
+        //         VOLUME = '$(pwd)/flaskr:/src, $(pwd)/tests:/tests'
+        //         IMAGE = 'prabha6kar/ci_sample_python:flaskr_blog'
+        //     }
+        //     steps {
+        //         dir(path: BUILD_ID) {
+        //             unstash(name: 'compiled-results')
+        //             sh "pwd && ls -al"
+        //             sh "cat mypass.txt | docker login --username prabha6kar --password-stdin"
+        //             sh "docker run --rm -v '${VOLUME}' '${IMAGE}' 'FLASK_APP=flaskr flaskr run'"
+        //             sh "docker logout"
+        //         }
+        //     }
+        //     post {
+        //         success {
+        //             archiveArtifacts "${BUILD_ID}/sources/dist/flaskr_blog"
+        //             sh "docker run --rm -v '${VOLUME}' '${IMAGE}' 'rm -rf build dist'"
+        //         }
+        //     }
+        // }
+        stage("PackagePublishToNexus") {
             steps {
-                dir(path: BUILD_ID) {
-                    unstash(name: 'compiled-results')
-                    sh "pwd && ls -al"
-                    sh "cat mypass.txt | docker login --username prabha6kar --password-stdin"
-                    sh "docker run --rm -v '${VOLUME}' '${IMAGE}' 'FLASK_APP=flaskr flaskr run'"
-                    sh "docker logout"
-                }
-            }
-            post {
-                success {
-                    archiveArtifacts "${BUILD_ID}/sources/dist/flaskr_blog"
-                    sh "docker run --rm -v '${VOLUME}' '${IMAGE}' 'rm -rf build dist'"
+                script {
+                    // Read setup.cfg file using 'readProperties' step , this step 'readProperties' is included in: https://plugins.jenkins.io/pipeline-utility-steps
+                    props = readProperties file: "setup.cfg";
+                    // Find built artifact under target folder
+                    filesByGlob = findFiles(glob: "target/*.${props.metadata}");
+                    // Print some info from the artifact found
+                    echo "${filesByGlob[0].name} ${filesByGlob[0].version} ${filesByGlob[0].url} ${filesByGlob[0].license} ${filesByGlob[0].maintanier}"
+                    // Extract the path from the File found
+                    artifactPath = filesByGlob[0].path;
+                    // Assign to a boolean response verifying If the artifact name exists
+                    artifactExists = fileExists artifactPath;
+                    if(artifactExists) {
+                        echo "*** File: ${artifactPath}, packaging: ${props.name}, version ${props.version}";
+
+                        nexusPublisher nexusInstanceId: NEXUS_INSTANCE, 
+                            nexusRepositoryId: NEXUS_REPOSITORY, 
+                            packages: [
+                                [$class: 'PyPiPackage', 
+                                mavenAssetList: [
+                                    [classifier: '', extension: '', 
+                                    filePath: artifactPath]
+                                    ], 
+                                mavenCoordinate: [packaging: props.name, version: props.version]
+                                    ]
+                                ]
+                    } else {
+                        error "*** File: ${artifactPath}, could not be found";
+                    }
                 }
             }
         }
-    //     stage("PackagePublishToNexus") {
-    //         steps {
-    //             script {
-    //                 // Read setup.cfg file using 'readProperties' step , this step 'readProperties' is included in: https://plugins.jenkins.io/pipeline-utility-steps
-    //                 props = readProperties file: "setup.cfg";
-    //                 // Find built artifact under target folder
-    //                 filesByGlob = findFiles(glob: "target/*.${props.metadata}");
-    //                 // Print some info from the artifact found
-    //                 echo "${filesByGlob[0].name} ${filesByGlob[0].version} ${filesByGlob[0].url} ${filesByGlob[0].license} ${filesByGlob[0].maintanier}"
-    //                 // Extract the path from the File found
-    //                 artifactPath = filesByGlob[0].path;
-    //                 // Assign to a boolean response verifying If the artifact name exists
-    //                 artifactExists = fileExists artifactPath;
-    //                 if(artifactExists) {
-    //                     echo "*** File: ${artifactPath}, packaging: ${props.name}, version ${props.version}";
-
-    //                     nexusPublisher nexusInstanceId: NEXUS_INSTANCE, 
-    //                         nexusRepositoryId: NEXUS_REPOSITORY, 
-    //                         packages: [
-    //                             [$class: 'PyPiPackage', 
-    //                             mavenAssetList: [
-    //                                 [classifier: '', extension: '', 
-    //                                 filePath: artifactPath]
-    //                                 ], 
-    //                             mavenCoordinate: [packaging: props.name, version: props.version]
-    //                                 ]
-    //                             ]
-    //                 } else {
-    //                     error "*** File: ${artifactPath}, could not be found";
-    //                 }
-    //             }
-    //         }
-    //     }
     }
     
     post {
         always {
-            echo 'JENKINS PIPELINE - ${BUILD_URL}, ${BUILD_ID}'
+            echo 'JENKINS PIPELINE - $BUILD_URL, $BUILD_ID'
         }
         notBuilt {
             echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE NOT BUILT, STOPPED at STAGE - ${STAGE_NAME}'
