@@ -1,6 +1,6 @@
 pipeline { 
     // this is an important setup or differentiator from native java jenkins pipe
-    agent { docker { image 'python:3.6.6' } }
+    agent none
     
     // This displays colors using the 'xterm' ansi color map in the console output
     options {
@@ -30,7 +30,24 @@ pipeline {
                 }
             }
         }
-        stage("Build") {
+        stages {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'python:3.8-alpine'
+                }
+            }
+            steps {
+                sh 'python -m py_compile flaskr/*.py tests/*.py'
+            }
+        }
+
+        stage("Build_flaskr") {
+            agent {
+                docker {
+                    image 'python:3.8-alpine'
+                }
+            }
             steps {
                 script {
                     sh 'pip install -r requirements.txt'
@@ -40,10 +57,25 @@ pipeline {
                 }
             }
         }
-        stage("pytest") {
+        // stage("pytest") {
+        //     steps {
+        //         script {
+        //             sh "python3 -m pytest"
+        //         }
+        //     }
+        // }
+        stage('Test') {
+            agent {
+                docker {
+                    image 'qnib/pytest'
+                }
+            }
             steps {
-                script {
-                    sh "python3 -m pytest"
+                sh 'py.test --verbose --junit-xml test-reports/results.xml flaskr/__init__.py'
+            }
+            post {
+                always {
+                    junit 'test-reports/results.xml'
                 }
             }
         }
