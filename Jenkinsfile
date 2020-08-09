@@ -16,6 +16,7 @@ pipeline {
         // // Repository where we will upload the artifact
         NEXUS_REPOSITORY_RELEASES = "python-releases"
         NEXUS_REPOSITORY_SNAPSHOTS = "python-snapshots"
+        SONAR_CACHE_DIR = "${BUILD_URL}/sonar_cache"
     }
 
     stages {
