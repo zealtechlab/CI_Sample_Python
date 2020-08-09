@@ -30,7 +30,6 @@ pipeline {
                 }
             }
         }
-        stages {
         stage('Build') {
             agent {
                 docker {
@@ -39,6 +38,7 @@ pipeline {
             }
             steps {
                 sh 'python -m py_compile flaskr/*.py tests/*.py'
+                stash(name: 'compiled-results', includes: 'flaskr/*.py*') 
             }
         }
 
@@ -57,13 +57,6 @@ pipeline {
                 }
             }
         }
-        // stage("pytest") {
-        //     steps {
-        //         script {
-        //             sh "python3 -m pytest"
-        //         }
-        //     }
-        // }
         stage('Test') {
             agent {
                 docker {
@@ -80,18 +73,37 @@ pipeline {
             }
         }
         stage('Inspect_SonarQubeAnalytics') {
-        steps {
-            script {
-                def scannerHome = tool 'sonarQube';
-                withSonarQubeEnv("sonarQube") {
-                    // sh "${tool("sonarQube")}/bin/sonar-scanner -Dsonar.projectKey=CI_Sample_Python \
-                    // -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 \
-                    // -Dsonar.login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43"
-                    sh "docker run --rm -e SONAR_HOST_URL=${SONARQUBE_URL} \
-                    -e SONAR_Login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43 \
-                    -v ${YOUR_REPO}:/usr/src sonarsource/sonar-scanner-cli"
-
+            steps {
+                script {
+                    def scannerHome = tool 'sonarQube';
+                    withSonarQubeEnv("sonarQube") {
+                        // sh "${tool("sonarQube")}/bin/sonar-scanner -Dsonar.projectKey=CI_Sample_Python \
+                        // -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 \
+                        // -Dsonar.login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43"
+                        sh "docker run --rm -e SONAR_HOST_URL=${SONARQUBE_URL} \
+                        -e SONAR_Login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43 \
+                        -v ${YOUR_REPO}:/usr/src sonarsource/sonar-scanner-cli"
                     }
+                }
+            }
+        }
+        stage('Deliver') {
+            agent any
+            environment {
+                VOLUME = '$(pwd)/flaskr:/src'
+                VOLUME = '$(pwd)/tests:/tests'
+                IMAGE = 'prabha6kar/CI_Sample_Python:flaskr_blog'
+            }
+            steps {
+                dir(path: env.BUILD_ID) {
+                    unstash(name: 'compiled-results')
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'flaskr run'"
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals"
+                    sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
                 }
             }
         }
