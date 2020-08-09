@@ -80,7 +80,8 @@ pipeline {
             steps {
                 dir(path: BUILD_ID) {
                     unstash(name: 'compiled-results')
-                    sh "cat '${pwd}'/mypass.txt | docker login --username prabha6kar --password-stdin"
+                    sh "pwd && ls -al"
+                    sh "cat mypass.txt | docker login --username prabha6kar --password-stdin"
                     sh "docker run --rm -v '${VOLUME}' '${IMAGE}' 'FLASK_APP=flaskr flaskr run'"
                     sh "docker logout"
                 }
