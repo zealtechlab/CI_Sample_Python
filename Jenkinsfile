@@ -47,12 +47,11 @@ pipeline {
         stage("setup_flaskr") {
             steps {
                 script {
-                    sh 'pip install -e .'
+                    sh 'python setup.py develop'
                     // sh 'pip install -r requirements.txt'
                     sh 'export FLASK_APP=flaskr'
                     sh 'export FLASK_ENV=development'
-                    sh 'flaskr init-db'
-                    sh 'python setup.py develop'
+                    sh 'flask init-db'
                 }
             }
         }
