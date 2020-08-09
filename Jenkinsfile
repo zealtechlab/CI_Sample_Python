@@ -34,8 +34,9 @@ pipeline {
         }
         stage('Build') {
             agent {
-                docker {image 'python:3.8-alpine' args '-v ${PWD}:/usr/src/app -w /usr/src/app'
-                    reuseNode true  } }
+                docker {image 'python:3.8-alpine' 
+                        args '-v ${PWD}:/usr/src/app -w /usr/src/app'
+                        reuseNode true  } }
             steps {
                 sh 'python -m py_compile flaskr/*.py tests/*.py'
                 stash(name: 'compiled-results', includes: 'flaskr/*.py*') 
@@ -61,8 +62,9 @@ pipeline {
             }
         }
         stage('Test') {
-            agent {docker {image 'qnib/pytest' args '-v ${PWD}:/usr/src/app -w /usr/src/app'
-                    reuseNode true}}
+            agent {docker {image 'qnib/pytest' 
+                            args '-v ${PWD}:/usr/src/app -w /usr/src/app'
+                            reuseNode true}}
             steps {
                 sh 'pip install -e .'
                 sh 'py.test --verbose --junit-xml test-reports/results.xml tests/*.py'
