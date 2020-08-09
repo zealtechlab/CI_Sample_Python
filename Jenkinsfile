@@ -16,7 +16,7 @@ pipeline {
         // // Repository where we will upload the artifact
         NEXUS_REPOSITORY_RELEASES = "python-releases"
         NEXUS_REPOSITORY_SNAPSHOTS = "python-snapshots"
-        YOUR_REPO = "${currentBuild.fullProjectName}"
+        SONAR_CACHE_DIR = 
     }
 
     stages {
@@ -61,7 +61,9 @@ pipeline {
                         // -Dsonar.login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43"
                         sh "docker run --rm -e SONAR_HOST_URL=${SONARQUBE_URL} \
                         -e SONAR_Login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43 \
-                        -v ${YOUR_REPO}:/usr/src sonarsource/sonar-scanner-cli"
+                        -v ${currentBuild.fullProjectName}:/usr/src \
+                        -v ${SONAR_CACHE_DIR}:/opt/sonar-scanner/.sonar/cache \
+                        sonarsource/sonar-scanner-cli"
                     }
                 }
             }
@@ -73,14 +75,14 @@ pipeline {
                 IMAGE = 'prabha6kar/CI_Sample_Python:flaskr_blog'
             }
             steps {
-                dir(path: env.BUILD_ID) {
+                dir(path: BUILD_ID) {
                     unstash(name: 'compiled-results')
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'flaskr run'"
                 }
             }
             post {
                 success {
-                    archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals"
+                    archiveArtifacts "${BUILD_ID}/sources/dist/add2vals"
                     sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
                 }
             }
@@ -122,25 +124,25 @@ pipeline {
     
     post {
         always {
-            echo 'JENKINS PIPELINE - ${env.BUILD_URL}'
+            echo 'JENKINS PIPELINE - ${BUILD_URL}, ${BUILD_ID}'
         }
         notBuilt {
-            echo '${env.BUILD_URL} JENKINS PIPELINE NOT BUILT'
+            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE NOT BUILT, STOPPED at STAGE - ${STAGE_NAME}'
         }
         success {
-            echo '${env.BUILD_URL} JENKINS PIPELINE SUCCESSFUL'
+            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE SUCCESSFUL'
         }
         failure {
-            echo '${env.BUILD_URL} JENKINS PIPELINE FAILED'
+            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE FAILED at Stage - ${STAGE_NAME}'
         }
         unstable {
-            echo '${env.BUILD_URL} JENKINS PIPELINE WAS MARKED AS UNSTABLE'
+            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE WAS MARKED AS UNSTABLE'
         }
         changed {
-            echo '${env.BUILD_URL} JENKINS PIPELINE STATUS HAS CHANGED SINCE LAST EXECUTION'
+            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE STATUS HAS CHANGED SINCE LAST EXECUTION'
         }
         aborted {
-            echo '${env.BUILD_URL} JENKINS PIPELINE ABORTED'
+            echo '${BUILD_ID} ${BUILD_URL} JENKINS PIPELINE ABORTED'
         }
     }
 }
