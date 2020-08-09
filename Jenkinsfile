@@ -47,8 +47,7 @@ pipeline {
         stage("setup_flaskr") {
             steps {
                 script {
-                    sh 'python setup.py develop'
-                    // sh 'pip install -r requirements.txt'
+                    sh 'pip install -r requirements.txt'
                     sh 'export FLASK_APP=flaskr'
                     sh 'export FLASK_ENV=development'
                     sh 'flask init-db'
@@ -60,7 +59,6 @@ pipeline {
                             args '-v ${PWD}:/usr/src/app -w /usr/src/app'
                             reuseNode true}}
             steps {
-                sh 'pip install -e .'
                 sh 'py.test --verbose --junit-xml test-reports/results.xml tests/*.py'
             }
             post {always {junit 'test-reports/results.xml'}}
