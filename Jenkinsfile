@@ -61,7 +61,7 @@ pipeline {
                         // -Dsonar.login=454d59b6e686ff8a6cf6f984ed2553e615c33cfd"
                         sh "docker run --rm -e SONAR_HOST_URL=${SONARQUBE_URL} \
                         -e SONAR_Login=09949926d3d8c85fd2b9c0cf64cacf43ff683a43 \
-                        -v ${currentBuild.fullProjectName}:/usr/src \
+                        -v ${PWD}:/usr/src \
                         -v ${SONAR_CACHE_DIR}:/opt/sonar-scanner/.sonar/cache \
                         sonarsource/sonar-scanner-cli"
                     }
