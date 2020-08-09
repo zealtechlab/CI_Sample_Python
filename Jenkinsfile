@@ -40,7 +40,7 @@ pipeline {
             steps {
                 sh 'python -m py_compile flaskr/*.py tests/*.py'
                 stash(name: 'compiled-results', includes: 'flaskr/*.py*') 
-                sh python setup.py develop
+                sh 'python setup.py develop'
             }
         }
 
