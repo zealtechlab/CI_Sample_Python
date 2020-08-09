@@ -48,8 +48,6 @@ pipeline {
             steps {
                 script {
                     sh 'pip install -e .'
-                    sh 'export FLASK_APP=flaskr'
-                    sh 'export FLASK_ENV=development'
                     sh 'FLASK_APP=flaskr flask init-db'
                 }
             }
@@ -59,6 +57,7 @@ pipeline {
                             args '-v ${PWD}:/usr/src/app -w /usr/src/app'
                             reuseNode true}}
             steps {
+                sh 'pip install -e .'
                 sh 'py.test --verbose --junit-xml test-reports/results.xml tests/*.py'
             }
             post {always {junit 'test-reports/results.xml'}}
