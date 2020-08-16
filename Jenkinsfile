@@ -47,6 +47,7 @@ pipeline {
         }
         stage('setup_flaskr_Pytest') {
             steps {
+                sh 'pip install pytest'
                 sh 'pip install -e .'
                 sh 'FLASK_APP=flaskr flask init-db'
                 sh 'pytest -v --junitxml="test-reports/results.xml"'
