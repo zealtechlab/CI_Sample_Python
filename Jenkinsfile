@@ -36,19 +36,18 @@ pipeline {
         }
         stage('Compile_Build') {
             agent {
-                docker {image 'python:3.8' 
+                docker {image 'python:3.8-alpine' 
                         args '-v ${PWD}:/usr/src/app -w /usr/src/app'
                         reuseNode true  } }
             steps {
                 sh 'python -m py_compile flaskr/*.py tests/*.py'
-                stash(name: 'compiled-results', includes: 'flaskr/*.py*') 
+                // stash(name: 'compiled-results', includes: 'flaskr/*.py*') 
                 sh 'python setup.py develop'
             }
         }
         stage('setup_flaskr_Pytest') {
             steps {
                 sh 'pip install pytest'
-                // sh 'pip install -e .'
                 sh 'FLASK_APP=flaskr flask init-db'
                 sh 'pytest -v --junitxml="test-reports/results.xml"'
             }
@@ -75,10 +74,10 @@ pipeline {
         }
         
         stage("DistPublishToNexus") {
-            // agent {
-            //     docker {image 'python:3.8' 
-            //             args '-v ${PWD}:/usr/src/app -w /usr/src/app'
-            //             reuseNode true  } }
+            agent {
+                docker {image 'python:3.8-alpine' 
+                        args '-v ${PWD}:/usr/src/app -w /usr/src/app'
+                        reuseNode true  } }
             steps {
                 // sh 'pip install -e .'
                 sh 'python setup.py sdist bdist_wheel'
