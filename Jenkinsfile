@@ -11,8 +11,8 @@ pipeline {
 
     environment {
         NEXUS_INSTANCE = 'sonatypeNexus'
-        NEXUS_URL = 'http://nexus:8081/repository'
-        // NEXUS_URL = 'http://172.18.0.2:8081/repository'
+        // NEXUS_URL = 'http://nexus:8081/repository'
+        NEXUS_URL = 'http://172.20.0.2:8081/repository'
         REPOSITORY_USER = 'admin'
         REPOSITORY_PASSWORD = 'password'
         NEXUS_REPOSITORY = "CI_Sample_Python"
