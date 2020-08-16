@@ -48,7 +48,7 @@ pipeline {
         stage('setup_flaskr_Pytest') {
             steps {
                 sh 'pip install pytest'
-                sh 'pip install -e .'
+                // sh 'pip install -e .'
                 sh 'FLASK_APP=flaskr flask init-db'
                 sh 'pytest -v --junitxml="test-reports/results.xml"'
             }
@@ -75,12 +75,12 @@ pipeline {
         }
         
         stage("DistPublishToNexus") {
-            agent {
-                docker {image 'python:3.8' 
-                        args '-v ${PWD}:/usr/src/app -w /usr/src/app'
-                        reuseNode true  } }
+            // agent {
+            //     docker {image 'python:3.8' 
+            //             args '-v ${PWD}:/usr/src/app -w /usr/src/app'
+            //             reuseNode true  } }
             steps {
-                sh 'pip install -e .'
+                // sh 'pip install -e .'
                 sh 'python setup.py sdist bdist_wheel'
                 sh 'twine upload --repository-url $NEXUS_URL/$NEXUS_REPOSITORY/ \
                 -u $REPOSITORY_USER -p $REPOSITORY_PASSWORD dist/*'
