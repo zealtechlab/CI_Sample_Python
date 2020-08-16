@@ -30,7 +30,7 @@ pipeline {
                     // Let's clone the source
                     echo 'Repo Checkout'
                     // git %GIT_URL%;
-                    stash(name: 'scm', includes: '*') 
+                    // stash(name: 'scm', includes: '*') 
                 }
             }
         }
