@@ -79,7 +79,7 @@ pipeline {
                         args '-v ${PWD}:/usr/src/app -w /usr/src/app'
                         reuseNode true  } }
             steps {
-                // sh 'pip install -e .'
+                sh 'pip install twine'
                 sh 'python setup.py sdist bdist_wheel'
                 sh 'twine upload --repository-url $NEXUS_URL/$NEXUS_REPOSITORY/ \
                 -u $REPOSITORY_USER -p $REPOSITORY_PASSWORD dist/*'
