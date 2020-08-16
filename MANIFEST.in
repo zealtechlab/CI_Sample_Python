@@ -1,1 +1,1 @@
-include flaskr/*
+include flaskr/**
